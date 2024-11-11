@@ -131,7 +131,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        tag_name: ${{ env.FILE_DATE }}
+        tag_name: LuCI_OpenWrt_23.05_${{ env.FILE_DATE }}
         body: Build by Github Actions. ^ ^
         draft: false
         prerelease: false
