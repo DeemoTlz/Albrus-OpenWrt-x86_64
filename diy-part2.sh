@@ -10,6 +10,9 @@
 # See /LICENSE for more information.
 #
 
+# recursive dependency with upnp
+./scripts/feeds uninstall luci-app-bypass
+
 # Modify default IP
 sed -i 's/192.168.1.1/10.10.30.1/g' package/base-files/files/bin/config_generate
 
