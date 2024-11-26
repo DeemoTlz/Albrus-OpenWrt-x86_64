@@ -129,7 +129,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        tag_name: LEDE_${{ env.FILE_DATE }}
+        tag_name: Lean_${{ env.REPO_BRANCH }}_${{ env.FILE_DATE }}
         body: Build by Github Actions. ^ ^
         draft: false
         prerelease: false
