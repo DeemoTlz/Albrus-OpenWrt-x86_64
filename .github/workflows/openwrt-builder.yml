@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/openwrt/openwrt
-  REPO_BRANCH: openwrt-23.05
+  REPO_URL: https://github.com/Lienol/openwrt
+  REPO_BRANCH: 24.10
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -32,6 +32,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     permissions:
+      actions: write
       contents: write
 
     steps:
@@ -116,29 +117,28 @@ jobs:
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
-        rm -rf packages
+        # 删除除了combined.img之外的所有文件
+        find . -type f ! -name '*combined*.img' -exec rm -f {} +
+        # 删除除了combined.img之外的所有文件夹
+        find . -mindepth 1 -type d -exec rm -rf {} +
+        ls -l
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: Upload firmware directory
-      uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: OpenWrt_firmware_${{ env.DEVICE_NAME }}_${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag and Upload firmware
       uses: softprops/action-gh-release@v2
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        tag_name: LuCI_OpenWrt_23.05_${{ env.FILE_DATE }}
+        tag_name: Lienol_${{ env.REPO_BRANCH }}_${{ env.FILE_DATE }}
         body: Build by Github Actions. ^ ^
         draft: false
         prerelease: false
-        files: ${{ env.FIRMWARE }}/*
+        files: |
+          openwrt/.config
+          ${{ env.FIRMWARE }}/*
 
     - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@main
+      uses: Mattraks/delete-workflow-runs@v2
       with:
         retain_days: 0
         keep_minimum_runs: 2
